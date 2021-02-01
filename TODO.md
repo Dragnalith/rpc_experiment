@@ -1,0 +1,14 @@
+- [ ] Create C# RPC Libray
+- [ ] Create C# Code Generator
+- [ ] Create ServerTest
+- [ ] Create ClientTest
+- [ ] Create TestRunner (Launching several server and client)
+- [ ] RpcLibrary: OneWayServer
+- [ ] RpcLibrary: TwoWayServer
+- [ ] RpcLibrary: Can catch deconnection and clean handle
+- [ ] Use CancelationToken to stop Job
+- [ ] Implement ServiceRegistar
+- [ ] Implement Dependency Injection Container
+- [ ] Experiment custom ddl language with ANTRL
+- [ ] Experiment ddl language using C# and attribute annotation
+- [ ] C++ implementation
