@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package GrpcSample.Generated;
+
+service Calculator {
+    rpc AddOne (IntegerMessage) returns (IntegerMessage);
+}
+
+message IntegerMessage {
+    int64 value = 1;
+    string message = 2;
+}
