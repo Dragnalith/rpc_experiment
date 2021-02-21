@@ -1,7 +1,10 @@
-- [ ] Create C# RPC Libray
+- [X] Create ServerTest
+- [X] Create ClientTest
+- [X] Create C# RPC Libray
+- [ ] Create simple interface to be used as example, for instance Calculator { int Increment(int);}
+- [ ] Create Server class
+- [ ] Create Transport class
 - [ ] Create C# Code Generator
-- [ ] Create ServerTest
-- [ ] Create ClientTest
 - [ ] Create TestRunner (Launching several server and client)
 - [ ] RpcLibrary: OneWayServer
 - [ ] RpcLibrary: TwoWayServer
