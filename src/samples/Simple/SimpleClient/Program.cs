@@ -4,24 +4,34 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimpleClient
+using Drgn.Rpc;
+
+namespace Samples
 {
     class Program
     {
         static async Task Main(string[] args)
         {
-            var client = new TcpClient();
-            await client.ConnectAsync(IPAddress.Loopback, 27500);
-            client.NoDelay = true;
-            var stream = client.GetStream();
+            var client = new Generated.CalculatorClient(new TcpTransportFactory(IPAddress.Loopback, 27500));
 
-            var message = $"My client time is {DateTime.Now}";
-            var rawMessage = Encoding.UTF8.GetBytes(message);
-            Console.WriteLine($"Client message is \"{Encoding.UTF8.GetString(rawMessage)}\".");
-            await stream.WriteAsync(rawMessage, 0, rawMessage.Length);
+            int value = 7;
+            do
+            {
+                Console.WriteLine($"Add one to {value}.");
+                int result = await client.AddOneAsync(value);
+                Console.WriteLine($"  -> {value} + 1 = {result}");
 
-            Console.WriteLine("Press any key to stop the client...");
-            Console.ReadKey();
+                value *= 2;
+                Console.WriteLine($"Press 'Escape' to stop, otherwise try to do ({value} + 1)...");
+                var keyInfo = Console.ReadKey();
+                if (keyInfo.Key == ConsoleKey.Escape)
+                {
+                    break;
+                }
+
+            } while (true);
+
+            client.Dispose();
         }
     }
 }

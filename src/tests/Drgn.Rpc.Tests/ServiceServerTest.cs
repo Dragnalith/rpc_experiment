@@ -8,7 +8,7 @@ namespace Drgn.Rpc.Tests
         [Fact]
         public void Test1()
         {
-            Assert.Equal("Hello", ServiceServer.SayHello());
+            
         }
     }
 }

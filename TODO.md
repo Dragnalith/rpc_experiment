@@ -4,6 +4,8 @@
 - [ ] Create simple interface to be used as example, for instance Calculator { int Increment(int);}
 - [ ] Create Server class
 - [ ] Create Transport class
+- [ ] Handle service event
+- [ ] Create to intercept disconnection
 - [ ] Create C# Code Generator
 - [ ] Create TestRunner (Launching several server and client)
 - [ ] RpcLibrary: OneWayServer
