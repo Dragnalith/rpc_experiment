@@ -1,12 +1,12 @@
 - [X] Create ServerTest
 - [X] Create ClientTest
 - [X] Create C# RPC Libray
-- [ ] Create simple interface to be used as example, for instance Calculator { int Increment(int);}
-- [ ] Create Server class
-- [ ] Create Transport class
-- [ ] Handle service event
-- [ ] Create to intercept disconnection
+- [X] Create simple interface to be used as example, for instance Calculator { int Increment(int);}
+- [X] Create Server class
+- [X] Create Transport class
+- [X] Handle service event
 - [ ] Create C# Code Generator
+- [ ] Create to intercept disconnection
 - [ ] Create TestRunner (Launching several server and client)
 - [ ] RpcLibrary: OneWayServer
 - [ ] RpcLibrary: TwoWayServer

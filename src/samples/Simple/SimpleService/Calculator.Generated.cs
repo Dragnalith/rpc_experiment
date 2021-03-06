@@ -5,9 +5,14 @@ using Drgn.Rpc;
 
 namespace Samples.Generated
 {
+    public delegate void UsageNotificationHandler(string notificationMessage);
+    
     public interface ICalculator
     {
+
         ValueTask<int> AddOneAsync(int value);
+
+        event UsageNotificationHandler UsageNotification;
     }
 
     public static class ICalculatorExtensions
@@ -15,49 +20,73 @@ namespace Samples.Generated
         public static int AddOne(this ICalculator calculator, int value) => calculator.AddOneAsync(value).Result;
     }
 
-    public class CalculatorClient : ICalculator, IDisposable
+    public class CalculatorClient : ServiceClient, ICalculator, IDisposable
     {
-        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-        private ITransport _transport;
+        public event UsageNotificationHandler UsageNotification;
 
         public  CalculatorClient(ITransportFactory factory)
+            : base(factory)
         {
-            _transport = factory.Create(_cancellationTokenSource.Token);
         }
 
         public async ValueTask<int> AddOneAsync(int value)
         {
-            await _transport.WriteInt32(Message.MagicNumber);
-            await _transport.WriteInt32((int) Message.Type.Method);
-            await _transport.WriteInt32((int) CalculatorDispatcher.Method.AddOne);
-            await _transport.WriteInt32(value);
+            await _procedureTransport.WriteInt32(Message.MagicNumber);
+            await _procedureTransport.WriteMessageType(Message.Type.Method);
+            await _procedureTransport.WriteInt32((int) CalculatorDispatcher.Method.AddOne);
+            await _procedureTransport.WriteInt32(value);
 
-            return await _transport.ReadInt32();
+            return await _procedureTransport.ReadInt32();
+        }
+        public enum Event
+        {
+            UsageNotification = 0
         }
 
-        public void Dispose()
+        protected override async Task Dispatch(ITransport transport)
         {
-            _cancellationTokenSource.Cancel();
+            Event method = (Event)await transport.ReadInt32();
+            switch (method)
+            {
+                case Event.UsageNotification:
+                    string value = await transport.ReadString();
+                    UsageNotification?.Invoke(value);
+                    break;
+                default:
+                    throw new ProtocolException("Unknown event identifier");
+            }
         }
     }
 
     public class CalculatorDispatcher : IServiceDisptacher
     {
-        public ICalculator _impl;
-
+        private ICalculator _impl;
         public enum Method
         {
             AddOne = 0
         }
 
+        public event OnEventHandler OnEvent;
+
         public CalculatorDispatcher(ICalculator impl)
         {
             _impl = impl;
+            _impl.UsageNotification += OnUsageNotification;
+        }
+
+        private void OnUsageNotification(string value)
+        {
+            OnEvent?.Invoke(async transport => {
+                await transport.WriteInt32(Message.MagicNumber);
+                await transport.WriteMessageType(Message.Type.Event);
+                await transport.WriteInt32((int)CalculatorClient.Event.UsageNotification);
+                await transport.WriteString(value);
+            });
         }
 
         public async Task Dispatch(ITransport transport)
         {
-            Method method = (Method) await transport.ReadInt32();
+            Method method = (Method)await transport.ReadInt32();
             switch (method)
             {
                 case Method.AddOne:

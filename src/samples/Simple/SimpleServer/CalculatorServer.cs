@@ -17,6 +17,12 @@ namespace Samples
         public CalculatorServer()
         {
              _server = new ServiceServer(new Generated.CalculatorDispatcher(this), 27500);
+            _server.OnClientConnection += info => {
+                Console.WriteLine($"Client '{info}' has connected.");
+            }; 
+            _server.OnClientDisconnection += info => {
+                Console.WriteLine($"Client '{info}' has diconnected.");
+            };
         }
 
         public void Dispose()

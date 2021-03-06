@@ -13,7 +13,7 @@ namespace Samples
         static async Task Main(string[] args)
         {
             var client = new Generated.CalculatorClient(new TcpTransportFactory(IPAddress.Loopback, 27500));
-
+            client.UsageNotification += msg => Console.WriteLine($"Receive Message: '{msg}'");
             int value = 7;
             do
             {

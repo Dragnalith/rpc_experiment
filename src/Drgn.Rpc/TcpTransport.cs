@@ -13,6 +13,10 @@ namespace Drgn.Rpc
         private TcpClient _client;
         private NetworkStream _stream;
 
+        public bool Connected => _client.Connected;
+
+        public string Info => _client.Client.RemoteEndPoint is IPEndPoint endPoint ? endPoint.ToString() : "Unknown Host";
+
         public TcpTransport(IPAddress address, int port, CancellationToken cancellationToken)
         {
             _cancellationToken = cancellationToken;
@@ -48,6 +52,27 @@ namespace Drgn.Rpc
             Debug.Assert(totalCount == 4);
 
             return BitConverter.ToInt32(buffer);
+        }
+
+        public async Task WriteBytes(byte[] bytes)
+        {
+            await WriteInt32(bytes.Length);
+            await _stream.WriteAsync(bytes, _cancellationToken);
+        }
+
+        public async Task<byte[]> ReadBytes()
+        {
+            var length = await ReadInt32();
+            byte[] buffer = new byte[length];
+            int totalCount = 0;
+            while (totalCount < length)
+            {
+                int count = await _stream.ReadAsync(buffer, totalCount, length - totalCount, _cancellationToken);
+                totalCount += count;
+            }
+            Debug.Assert(totalCount == length);
+
+            return buffer;
         }
 
         public void Close()
